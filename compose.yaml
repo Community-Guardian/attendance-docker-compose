@@ -78,7 +78,23 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-
+  attendancesystemfrontend:
+    image: nrad8393/attendance-system-frontend-server:latest
+    environment:
+      NODE_ENV: production # Set NODE_ENV to production
+    ports:
+      - 3000:3000
+    depends_on:
+      attendancesystembackend:
+        condition: service_healthy
+    # health check for frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - attendance-backend-network
   nginx:
     image: nginx:alpine
     volumes:
