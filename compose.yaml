@@ -53,27 +53,23 @@ services:
 
   attendancesystembackend:
     image: nrad8393/attendance-system-backend-server:latest
-    # entrypoint: ["/app/entrypoint.sh"]
     env_file:
-      - .env  # Load environment variables from .env file
+      - .env
     environment:
-    - CELERY_BROKER_URL=redis://redis:6379/0`
-    - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
-      # - .:/app/  # Mount application code for development
-      - static_volume:/app/static  # Static files (CSS, JS, images)
-      - media_volume:/app/media  # User-uploaded content
-      - logs:/app/logs  # Application logs
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-
     deploy:
-      replicas: 3  # Scale to 3 backend instances
-      restart_policy:
-        condition: on-failure
+      replicas: 3
+    restart: unless-stopped
     networks:
       - attendance-backend-network
     healthcheck:
